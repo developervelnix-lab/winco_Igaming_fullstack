@@ -1,0 +1,50 @@
+# Query: Winzoo
+# ContextLines: 1
+
+10 results - 6 files
+
+package-lock.json:
+  1  {
+  2:   "name": "Ranabook",
+  3    "version": "0.0.0",
+
+  7      "": {
+  8:       "name": "Ranabook",
+  9        "version": "0.0.0",
+
+package.json:
+  1  {
+  2:   "name": "Ranabook",
+  3    "private": true,
+
+src/components/home/Faq.jsx:
+  32      {
+  33:       title: "What is Ranabook?",
+  34        content: "Flowbite is an open-source UI component library based on Tailwind CSS.",
+
+src/components/home/FrontScrollableCard.jsx:
+  10            <div className="text-center">
+  11:             <h3 className="text-xl md:text-2xl text-white font-bold">Welcome to {ranabook.name}</h3>
+  12              <p className="text-white">The ultimate gaming experience</p>
+
+  35              <h3 className="text-xl md:text-2xl text-yellow-400 font-bold">Join Now</h3>
+  36:             <p className="text-white">Get started with {ranabook.name} today</p>
+  37            </div>
+
+src/components/home/Home.jsx:
+  83              <div>
+  84:               <h3 className="text-lg font-bold text-yellow-400">{ranabook.name}</h3>
+  85                <p className="text-gray-400 text-sm">Your premier gaming destination</p>
+
+  96            <div className="mt-4 border-t border-gray-800 text-center text-gray-500 text-xs py-3"> {/* Adjusted margin and padding */}
+  97:             &copy; {new Date().getFullYear()} {ranabook.name}. All rights reserved.
+  98            </div>
+
+src/components/navbar/Deposit.jsx:
+   10    // Example UPI ID - replace with your actual payment information
+   11:   const upiId = "ranabook@upi";
+   12    
+
+  128                    <span className="text-gray-400 text-sm">Account Name:</span>
+  129:                   <p className="text-white">{ranabooxk.name} Entertainment Pvt Ltd</p>
+  130                  </div>
