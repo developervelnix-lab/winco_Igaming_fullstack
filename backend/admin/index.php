@@ -401,7 +401,7 @@ if (isset($_POST['submit'])){
             <div class="visual-content">
                 <div class="brand-identity">
                     <div class="brand-logo-large">
-                        <i class='bx bxs-bolt-circle'></i>
+                        <img src="../<?php echo htmlspecialchars($APP_LOGO); ?>" alt="Logo" style="width: 80%; height: 80%; object-fit: contain;">
                     </div>
                     <div class="brand-name-visual"><?php echo $APP_NAME; ?></div>
                 </div>

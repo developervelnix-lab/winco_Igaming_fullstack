@@ -19,11 +19,15 @@ $PLAYER_PREFIX = "hc4d11";
 $GAME_SERVER_URL = "https://jsgame.live";
 // app constants =============
 $APP_NAME = "Winco"; // Fallback
+$APP_LOGO = "wincologo.png"; // Fallback
 if (isset($conn) && $conn instanceof mysqli) {
-    $name_res = mysqli_query($conn, "SELECT tbl_service_value FROM tblservices WHERE tbl_service_name = 'SITE_NAME' LIMIT 1");
-    if ($name_res && $name_row = mysqli_fetch_assoc($name_res)) {
-        if (!empty($name_row['tbl_service_value'])) {
-            $APP_NAME = $name_row['tbl_service_value'];
+    $serv_res = mysqli_query($conn, "SELECT tbl_service_name, tbl_service_value FROM tblservices WHERE tbl_service_name IN ('SITE_NAME', 'SITE_LOGO_URL')");
+    while ($serv_row = mysqli_fetch_assoc($serv_res)) {
+        if ($serv_row['tbl_service_name'] == 'SITE_NAME' && !empty($serv_row['tbl_service_value'])) {
+            $APP_NAME = $serv_row['tbl_service_value'];
+        }
+        if ($serv_row['tbl_service_name'] == 'SITE_LOGO_URL' && !empty($serv_row['tbl_service_value'])) {
+            $APP_LOGO = $serv_row['tbl_service_value'];
         }
     }
 }

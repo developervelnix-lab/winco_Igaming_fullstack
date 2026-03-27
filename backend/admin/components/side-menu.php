@@ -131,7 +131,10 @@ $page_url_name = trim(str_replace($host_url, '', strtok($page_url, '?')), '/');
 <div class="menu-bar-view hide-native-scrollbar">
     
     <div class="side-logo-area">
-        <span class="side-logo-text"><?php echo strtoupper($APP_NAME); ?> </span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="../<?php echo $APP_LOGO; ?>" alt="Logo" style="width: 32px; height: 32px; object-fit: contain;">
+            <span class="side-logo-text"><?php echo strtoupper($APP_NAME); ?> </span>
+        </div>
         <div class="d-flex gap-2">
             <div class="menu-close-btn" onclick="themeToggle.toggle()" title="Toggle Theme">
                 <i class='bx bx-moon theme-icon-dark'></i>
