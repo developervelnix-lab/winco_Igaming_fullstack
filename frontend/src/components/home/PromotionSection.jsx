@@ -137,9 +137,11 @@ function PromotionSection({ banners = [] }) {
               disableOnInteraction: false,
             }}
             breakpoints={banners.length > 0 ? {
-              0: { slidesPerView: 1, spaceBetween: 12 },
-              640: { slidesPerView: 1, spaceBetween: 20 },
-              1024: { slidesPerView: 1, spaceBetween: 24 },
+              0: { slidesPerView: 1.15, spaceBetween: 12 },
+              480: { slidesPerView: 1.8, spaceBetween: 16 },
+              640: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 3, spaceBetween: 24 },
+              1280: { slidesPerView: 4, spaceBetween: 24 },
             } : {
               0: { slidesPerView: 1.15, spaceBetween: 12 },
               480: { slidesPerView: 1.8, spaceBetween: 16 },
