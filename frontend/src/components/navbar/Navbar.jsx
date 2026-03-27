@@ -269,6 +269,7 @@ function Navbar() {
               <button className="nav-link" onClick={() => scrollToSection("slots")} style={{ fontFamily: FONTS.head, background: 'none', border: 'none', cursor: 'pointer' }}>Slots</button>
               <button className="nav-link" onClick={() => scrollToSection("aviator")} style={{ fontFamily: FONTS.head, background: 'none', border: 'none', cursor: 'pointer' }}>Aviator</button>
               <button className="nav-link" onClick={handlePromotion} style={{ fontFamily: FONTS.head, background: 'none', border: 'none', cursor: 'pointer' }}>Promotions</button>
+              <button className="nav-link" onClick={handleContactUs} style={{ fontFamily: FONTS.head, background: 'none', border: 'none', cursor: 'pointer' }}>Contact</button>
             </nav>
 
             <div className="header-cta">

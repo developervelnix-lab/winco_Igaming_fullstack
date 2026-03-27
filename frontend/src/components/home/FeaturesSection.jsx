@@ -187,7 +187,7 @@ const FeaturesSection = () => {
                 backgroundClip: 'text',
               }}
             >
-              {ranabook?.platformName || 'Site'}
+              {ranabook?.name || 'Site'}
             </span>
             ?
           </motion.h2>

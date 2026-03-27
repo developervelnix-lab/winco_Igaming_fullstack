@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { createPortal } from "react-dom"
-import { FaArrowLeft, FaPlay } from "react-icons/fa"
+import { FaChevronLeft, FaChevronRight, FaEye, FaArrowLeft, FaPlay } from "react-icons/fa"
 import { liveSport } from "../jsondata/live"
 import { turbogames } from "../jsondata/turbogames"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { API_URL } from "@/utils/constants"
 import { useColors } from '../../hooks/useColors'
 import { FONTS } from '../../constants/theme'
@@ -15,14 +15,40 @@ const GameSection = ({ title, games }) => {
   const [preloadedImages, setPreloadedImages] = useState([])
   const [loadingForGames, setLoadingForGames] = useState(null)
   const [showPopup, setShowPopup] = useState(false)
-  const navigate = useNavigate()
   const [confirmPopup, setConfirmPopup] = useState({ show: false, game: null })
+  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [hoveredGame, setHoveredGame] = useState(null)
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [loadingProgress, setLoadingProgress] = useState(0)
 
+  const popupParam = searchParams.get("show_all")
+  const sectionId = title.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-")
+
   useEffect(() => {
-    const images = games.map((game) => game.icon)
+    if (popupParam === sectionId) {
+      setShowPopup(true)
+    } else {
+      setShowPopup(false)
+    }
+  }, [popupParam, sectionId])
+
+  const openPopup = () => {
+    setSearchParams((prev) => {
+      prev.set("show_all", sectionId)
+      return prev
+    })
+  }
+
+  const closePopup = () => {
+    setSearchParams((prev) => {
+      prev.delete("show_all")
+      return prev
+    })
+  }
+
+  useEffect(() => {
+    const images = games?.map((game) => game.icon) || []
     preloadImages(images)
   }, [games])
 
@@ -75,6 +101,8 @@ const GameSection = ({ title, games }) => {
     const userId = sessionStorage.getItem("account_id")
 
     const game = confirmPopup.game
+    if (!game) return
+
     setLoadingForGames(game["Game UID"])
     setConfirmLoading(true)
     setConfirmPopup({ show: false, game: confirmPopup.game })
@@ -101,7 +129,7 @@ const GameSection = ({ title, games }) => {
       const data = await response.json()
 
       if (showPopup) {
-        setShowPopup(false)
+        closePopup()
       }
 
       if (data.error) {
@@ -132,7 +160,6 @@ const GameSection = ({ title, games }) => {
         backdropFilter: "blur(10px)",
       }}
     >
-      {/* Decorative Brand Accent */}
       <div
         className="absolute top-0 left-0 w-1.5 h-full opacity-70"
         style={{ background: COLORS.brandGradient }}
@@ -145,15 +172,27 @@ const GameSection = ({ title, games }) => {
         >
           {title}
         </h2>
-        <div className="flex items-center space-x-3">
-
-        </div>
+        
+        <button
+          onClick={openPopup}
+          className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-[10px] sm:text-xs font-bold uppercase transition-all duration-500 shadow-lg hover:shadow-brand/20 active:scale-95 group overflow-hidden relative"
+          style={{
+            background: COLORS.brandGradient,
+            fontFamily: FONTS.ui,
+            letterSpacing: "0.05em",
+          }}
+          aria-label="See All"
+        >
+          <div className="absolute inset-0 bg-gray-100 dark:bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <FaEye size={12} className="sm:size-[14px] group-hover:scale-110 transition-transform duration-300" />
+          <span>See All</span>
+        </button>
       </div>
 
       <div
         className="flex md:grid md:grid-cols-5 overflow-x-auto md:overflow-x-visible scrollbar-hide snap-x snap-mandatory gap-2 sm:gap-3 px-2 pb-4"
       >
-        {games.map((game, index) => (
+        {games?.map((game, index) => (
           <div key={index} 
             className="flex-shrink-0 w-[calc((100%-16px)/3)] sm:w-[calc((100%-24px)/3.5)] md:w-full snap-start relative aspect-[4/5] rounded-xl overflow-hidden bg-gray-100 dark:bg-white/5 border border-black/10 dark:border-white/10 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl group cursor-pointer" 
             onClick={() => handleGameClick(game)}
@@ -163,7 +202,6 @@ const GameSection = ({ title, games }) => {
                 }`}
               src={game.icon || "/placeholder.svg"}
               alt={game["Game Name"]}
-              onClick={() => handleGameClick(game)}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2 sm:p-3 pointer-events-none">
               <span className="text-black dark:text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider truncate w-full" style={{ fontFamily: FONTS.ui }}>
@@ -183,110 +221,108 @@ const GameSection = ({ title, games }) => {
         ))}
       </div>
 
-      {showPopup && createPortal(
-        <div className="fixed inset-0 bg-black z-[99999] overflow-y-auto animate-fadeIn flex flex-col">
-          {/* Atmospheric Background Lighting */}
-          <div className="fixed inset-0 pointer-events-none opacity-40" style={{
-            backgroundImage: `radial-gradient(circle at 50% -20%, ${COLORS.brand}44, transparent 70%), radial-gradient(circle at 0% 100%, ${COLORS.brand}22, transparent 50%), radial-gradient(circle at 100% 100%, ${COLORS.brand}22, transparent 50%)`
-          }}></div>
+      {showPopup &&
+        createPortal(
+          <div className="fixed inset-0 bg-black z-[99999] overflow-y-auto animate-fadeIn flex flex-col">
+            <div
+              className="fixed inset-0 pointer-events-none opacity-40"
+              style={{
+                backgroundImage: `radial-gradient(circle at 50% -20%, ${COLORS.brand}44, transparent 70%), radial-gradient(circle at 0% 100%, ${COLORS.brand}22, transparent 50%), radial-gradient(circle at 100% 100%, ${COLORS.brand}22, transparent 50%)`,
+              }}
+            ></div>
 
-          <div className="relative flex flex-col min-h-full backdrop-blur-[50px]">
-            {/* Elite Sticky Header */}
-            <div className="sticky top-0 z-[100] w-full border-b border-black/5 dark:border-white/5 shadow-2xl"
-              style={{ backgroundColor: `${COLORS.bg2}A0` }}>
-              <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between backdrop-blur-md">
-                <div className="flex items-center gap-6">
-                  <button
-                    onClick={() => setShowPopup(false)}
-                    className="bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-black dark:text-white rounded-2xl p-3.5 transition-all duration-300 border border-black/10 dark:border-white/10 shadow-lg active:scale-95 group"
-                    aria-label="Go Back"
-                  >
-                    <FaArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-                  </button>
-                  <div
-                    className="h-10 w-1 rounded-full opacity-80"
-                    style={{ background: COLORS.brandGradient }}
-                  ></div>
-                  <div>
-                    <h2
-                      className="text-2xl font-black text-black dark:text-white tracking-[0.15em] uppercase"
-                      style={{ fontFamily: FONTS.head }}
+            <div className="relative flex flex-col min-h-full backdrop-blur-[50px]">
+              <div
+                className="sticky top-0 z-[100] w-full border-b border-black/5 dark:border-white/5 shadow-2xl"
+                style={{ backgroundColor: `${COLORS.bg2}A0` }}
+              >
+                <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between backdrop-blur-md">
+                  <div className="flex items-center gap-6">
+                    <button
+                      onClick={closePopup}
+                      className="bg-gray-100 dark:bg-white/5 hover:bg-gray-100 dark:bg-white/10 text-black dark:text-white rounded-2xl p-3.5 transition-all duration-300 border border-black/10 dark:border-white/10 shadow-lg active:scale-95 group"
+                      aria-label="Go Back"
                     >
-                      {title}
-                    </h2>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
-                      <span className="text-[10px] text-black/40 dark:text-white/40 font-bold uppercase tracking-[0.2em]">Premium Collection</span>
+                      <FaArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                    </button>
+                    <div className="h-10 w-1 rounded-full opacity-80" style={{ background: COLORS.brandGradient }}></div>
+                    <div>
+                      <h2
+                        className="text-2xl font-black text-black dark:text-white tracking-[0.15em] uppercase"
+                        style={{ fontFamily: FONTS.head }}
+                      >
+                        {title}
+                      </h2>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
+                        <span className="text-[10px] text-black/40 dark:text-white/40 font-bold uppercase tracking-[0.2em]">
+                          Premium Collection
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Header Branding */}
-                <div className="hidden md:flex items-center gap-4 opacity-20">
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-black dark:text-white">WinZoo Elite Gallery</span>
-                  <div className="h-px w-20 bg-gradient-to-l from-transparent to-white/50"></div>
+                  <div className="hidden md:flex items-center gap-4 opacity-20">
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-black dark:text-white">
+                      Winco Elite Gallery
+                    </span>
+                    <div className="h-px w-20 bg-gradient-to-l from-transparent to-white/50"></div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Immersive Game Grid */}
-            <div className="flex-1 w-full max-w-[1920px] mx-auto px-4 md:px-6 py-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 xl:grid-cols-[repeat(11,minmax(0,1fr))] 2xl:grid-cols-[repeat(13,minmax(0,1fr))] gap-2 md:gap-3 animate-fadeInUp">
-                {games.map((game, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col group cursor-pointer"
-                    onClick={() => handleGameClick(game)}
-                  >
-                    <div className="relative aspect-[4/5] rounded-xl overflow-hidden p-[1px] bg-gradient-to-br from-white/10 via-transparent to-white/5 transition-all duration-500 group-hover:from-brand/50 group-hover:to-brand/20 group-hover:shadow-[0_0_30px_rgba(230,160,0,0.4)] group-hover:-translate-y-1">
-                      <div className="relative w-full h-full rounded-[11px] overflow-hidden bg-gray-100 dark:bg-white/5">
-                        <img
-                          className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${loadingForGames === game["Game UID"] ? "opacity-30 blur-sm" : ""
+              <div className="flex-1 w-full max-w-[1920px] mx-auto px-4 md:px-6 py-6">
+                <div className="see-all-grid gap-3 md:gap-6 animate-fadeInUp">
+                  {games.map((game, index) => (
+                    <div key={index} className="flex flex-col group cursor-pointer" onClick={() => handleGameClick(game)}>
+                      <div className="relative aspect-[4/5] rounded-xl overflow-hidden p-[1px] bg-gradient-to-br from-white/10 via-transparent to-white/5 transition-all duration-500 group-hover:from-brand/50 group-hover:to-brand/20 group-hover:shadow-[0_0_30px_rgba(230,160,0,0.4)] group-hover:-translate-y-1">
+                        <div className="relative w-full h-full rounded-[11px] overflow-hidden bg-gray-100 dark:bg-white/5">
+                          <img
+                            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
+                              loadingForGames === game["Game UID"] ? "opacity-30 blur-sm" : ""
                             }`}
-                          src={game.icon || "/placeholder.svg"}
-                          alt={game["Game Name"]}
-                        />
+                            src={game.icon || "/placeholder.svg"}
+                            alt={game["Game Name"]}
+                          />
 
-                        {/* Glass Reflection & Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-white/5 opacity-60 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-white/5 opacity-60 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                        {/* Hover Interaction Overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <div
-                            className="p-3 rounded-full shadow-2xl transform scale-50 group-hover:scale-100 transition-all duration-500 hover:scale-110"
-                            style={{ background: COLORS.brandGradient }}
-                          >
-                            <FaPlay className="text-black dark:text-white ml-0.5" size={12} />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div
+                              className="p-3 rounded-full shadow-2xl transform scale-50 group-hover:scale-100 transition-all duration-500 hover:scale-110"
+                              style={{ background: COLORS.brandGradient }}
+                            >
+                              <FaPlay className="text-black dark:text-white ml-0.5" size={12} />
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Internal Premium Label Overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 p-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                          <div className="backdrop-blur-md bg-black/10 dark:bg-black/40 rounded-lg p-1.5 border border-black/10 dark:border-white/10 text-center shadow-xl">
-                            <p className="text-[9px] font-black text-black/90 dark:text-white/90 truncate uppercase tracking-tighter">
-                              {game["Game Name"]}
-                            </p>
+                          <div className="absolute bottom-0 left-0 right-0 p-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <div className="backdrop-blur-md bg-black/10 dark:bg-black/40 rounded-lg p-1.5 border border-black/10 dark:border-white/10 text-center shadow-xl">
+                              <p className="text-[9px] font-black text-black/90 dark:text-white/90 truncate uppercase tracking-tighter">
+                                {game["Game Name"]}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              <div className="py-12 flex flex-col items-center justify-center gap-4 opacity-10">
+                <div className="h-px w-40 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+                <span className="text-[10px] font-black uppercase tracking-[0.8em] text-black dark:text-white">
+                  Experience Excellence
+                </span>
               </div>
             </div>
-
-            <div className="py-12 flex flex-col items-center justify-center gap-4 opacity-10">
-              <div className="h-px w-40 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
-              <span className="text-[10px] font-black uppercase tracking-[0.8em] text-black dark:text-white">Experience Excellence</span>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body,
+        )}
 
       {confirmPopup.show && createPortal(
         <div className="fixed inset-0 flex items-center justify-center bg-black/10 dark:bg-black/40 backdrop-blur-2xl z-[99999] transition-all duration-500 animate-fadeIn">
-          {/* Main Confirmation Card */}
           <div
             className="relative p-10 rounded-[2.5rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] max-w-sm w-full mx-6 animate-fadeInUp border border-black/10 dark:border-white/10 text-center"
             style={{
@@ -294,18 +330,13 @@ const GameSection = ({ title, games }) => {
               backgroundImage: 'radial-gradient(circle at top right, rgba(230, 160, 0, 0.05), transparent 40%)'
             }}
           >
-            {/* Glossy Overlay Effect */}
             <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none rounded-[2.5rem]"></div>
-
-            {/* Decorative Icon */}
             <div
               className="absolute -top-10 left-1/2 transform -translate-x-1/2 p-6 rounded-full shadow-2xl animate-bounce-slow"
               style={{ background: COLORS.brandGradient }}
             >
               <FaPlay className="text-black dark:text-white ml-0.5" size={28} />
             </div>
-
-            {/* Confirmation Message */}
             <p
               className="text-black dark:text-white text-lg font-bold mt-8 mb-2 tracking-tight"
               style={{ fontFamily: FONTS.head }}
@@ -315,8 +346,6 @@ const GameSection = ({ title, games }) => {
             <p className="text-black/60 dark:text-white/60 text-sm mb-8 leading-relaxed">
               You are about to enter <span className="text-black dark:text-white font-bold">{confirmPopup.game?.["Game Name"]}</span>. Good luck!
             </p>
-
-            {/* Action Buttons */}
             <div className="flex flex-col gap-3">
               <button
                 onClick={confirmGameOpen}
@@ -326,7 +355,6 @@ const GameSection = ({ title, games }) => {
                 <div className="absolute inset-0 bg-gray-100 dark:bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <span>Confirm Play</span>
               </button>
-
               <button
                 onClick={() => setConfirmPopup({ show: false, game: null })}
                 className="w-full px-6 py-3 rounded-2xl font-bold uppercase tracking-widest bg-gray-100 dark:bg-white/5 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/10 transition-all duration-300 border border-black/5 dark:border-white/5"
@@ -340,10 +368,8 @@ const GameSection = ({ title, games }) => {
         document.body
       )}
 
-      {/* Game Loading Screen */}
       {confirmLoading && createPortal(
         <div className="fixed inset-0 bg-black/10 dark:bg-black/40 backdrop-blur-2xl z-[999999] flex flex-col items-center justify-center transition-all duration-700 animate-fadeIn">
-          {/* Main Loading Card */}
           <div
             className="w-full max-w-md px-8 py-10 rounded-[2.5rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-black/10 dark:border-white/10 relative overflow-hidden text-center"
             style={{
@@ -351,10 +377,7 @@ const GameSection = ({ title, games }) => {
               backgroundImage: 'radial-gradient(circle at top right, rgba(230, 160, 0, 0.05), transparent 40%)'
             }}
           >
-            {/* Glossy Overlay Effect */}
             <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none"></div>
-
-            {/* Game Context */}
             <div className="relative z-10 mb-8">
               {confirmPopup.game && (
                 <div className="flex flex-col items-center">
@@ -382,8 +405,6 @@ const GameSection = ({ title, games }) => {
                 </div>
               )}
             </div>
-
-            {/* Ultra-Sleek Progress Bar */}
             <div className="relative z-10 px-4 mb-10">
               <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-1 overflow-hidden backdrop-blur-sm border border-black/5 dark:border-white/5">
                 <div
@@ -402,8 +423,6 @@ const GameSection = ({ title, games }) => {
                 <span className="text-[10px] text-brand font-black italic">{Math.round(loadingProgress)}%</span>
               </div>
             </div>
-
-            {/* Professional Status Steps */}
             <div className="relative z-10 space-y-4 px-2 mb-10 text-left">
               {[
                 { label: "Establishing Secure Tunnel", threshold: 30 },
@@ -427,8 +446,6 @@ const GameSection = ({ title, games }) => {
                 </div>
               ))}
             </div>
-
-            {/* Premium Tip Bar */}
             <div className="relative z-10 py-4 px-6 rounded-2xl bg-gray-100 dark:bg-white/5 border border-black/5 dark:border-white/5 backdrop-blur-md group hover:bg-white/[0.08] transition-all duration-500">
               <div className="flex items-center gap-3 mb-1">
                 <div className="w-5 h-[1px] bg-brand/50"></div>
@@ -439,11 +456,9 @@ const GameSection = ({ title, games }) => {
               </p>
             </div>
           </div>
-
-          {/* Footer Branding */}
           <div className="mt-8 flex items-center gap-4 opacity-30">
             <div className="h-px w-10 bg-gradient-to-r from-transparent to-white/50"></div>
-            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-black dark:text-white">WinZoo Elite</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-black dark:text-white">Winco Elite</span>
             <div className="h-px w-10 bg-gradient-to-l from-transparent to-white/50"></div>
           </div>
         </div>,
@@ -455,8 +470,9 @@ const GameSection = ({ title, games }) => {
 
 const Live = () => {
   return (
-    <div className="games-display space-y-6">
-      <GameSection title="🔴 Popular Games " games={liveSport} />
+    <div className="games-display space-y-6 overflow-hidden">
+      {" "}
+      <GameSection title="⚽ Live Sports" games={liveSport} />
     </div>
   )
 }
