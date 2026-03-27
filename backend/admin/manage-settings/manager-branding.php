@@ -30,15 +30,14 @@ if ($action == "update_logo") {
         $db_path = "admin/uploads/branding/" . $filename;
 
         if (move_uploaded_file($_FILES['site_logo']['tmp_name'], $target_file)) {
-            if (mysqli_query($conn, "UPDATE tblservices SET tbl_service_value = '$db_path' WHERE tbl_service_name = 'SITE_LOGO_URL'")) {
-                header("Location: site-branding.php?msg=Logo updated successfully");
-            } else {
-                $err = urlencode(mysqli_error($conn));
-                header("Location: site-branding.php?err=Database error: $err");
-            }
+            upsert_service($conn, 'SITE_LOGO_URL', $db_path);
+            header("Location: site-branding.php?msg=Logo updated successfully");
         } else {
             header("Location: site-branding.php?err=File upload to directory failed. Check permissions.");
         }
+    } else {
+        $error_code = $_FILES['site_logo']['error'] ?? 'No file';
+        header("Location: site-branding.php?err=Invalid file or upload error (Code: $error_code)");
     }
 }
 

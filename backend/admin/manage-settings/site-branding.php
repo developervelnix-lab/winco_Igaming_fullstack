@@ -180,6 +180,20 @@ $social_links = json_decode($social_links_json, true) ?: [];
                 <p>Modify site identity, promotional banners, and contact information</p>
             </div>
 
+            <?php if(isset($_GET['msg'])){ ?>
+                <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #10b981; padding: 15px; border-radius: 12px; margin-bottom: 25px; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 10px;">
+                    <i class='bx bx-check-circle' style="font-size: 20px;"></i>
+                    <?php echo htmlspecialchars($_GET['msg']); ?>
+                </div>
+            <?php } ?>
+
+            <?php if(isset($_GET['err'])){ ?>
+                <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #f87171; padding: 15px; border-radius: 12px; margin-bottom: 25px; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 10px;">
+                    <i class='bx bx-error-circle' style="font-size: 20px;"></i>
+                    <?php echo htmlspecialchars($_GET['err']); ?>
+                </div>
+            <?php } ?>
+
             <!-- SITE LOGO -->
             <form action="manager-branding.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="action_type" value="update_logo">
