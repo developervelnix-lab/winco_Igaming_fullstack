@@ -132,7 +132,11 @@ $page_url_name = trim(str_replace($host_url, '', strtok($page_url, '?')), '/');
     
     <div class="side-logo-area">
         <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="../<?php echo $APP_LOGO; ?>" alt="Logo" style="width: 32px; height: 32px; object-fit: contain;">
+            <?php 
+                $dots = str_repeat('../', substr_count($_SERVER['PHP_SELF'], '/') - 1);
+                $logo_src = (strpos($APP_LOGO, 'http') === 0) ? $APP_LOGO : $dots . $APP_LOGO;
+            ?>
+            <img src="<?php echo $logo_src; ?>" alt="Logo" style="width: 32px; height: 32px; object-fit: contain;">
             <span class="side-logo-text"><?php echo strtoupper($APP_NAME); ?> </span>
         </div>
         <div class="d-flex gap-2">

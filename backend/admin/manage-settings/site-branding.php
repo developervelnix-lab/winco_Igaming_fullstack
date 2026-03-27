@@ -537,22 +537,28 @@ $social_links = json_decode($social_links_json, true) ?: [];
             imageSmoothingQuality: 'high'
         });
         
-        canvas.toBlob(function(blob) {
-            const dataTransfer = new DataTransfer();
-            const file = new File([blob], currentFileName, { type: 'image/jpeg' });
-            dataTransfer.items.add(file);
-            currentInput.files = dataTransfer.files;
-            
-            // update UI label if present
-            const labelSpan = currentInput.previousElementSibling;
-            if (labelSpan && labelSpan.tagName === 'SPAN') {
-                labelSpan.innerText = currentFileName + " (Cropped)";
-            } else if (currentInput.parentElement.querySelector('.file-name-display')) {
-                currentInput.parentElement.querySelector('.file-name-display').innerText = currentFileName + " (Cropped)";
-            }
-            
-            closeCropModal();
-        }, 'image/jpeg', 0.9);
+        const base64Data = canvas.toDataURL('image/jpeg', 0.9);
+        
+        // Find or create hidden input in the parent form
+        const form = currentInput.closest('form');
+        let hiddenInput = form.querySelector('input[name="cropped_data"]');
+        if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'cropped_data';
+            form.appendChild(hiddenInput);
+        }
+        hiddenInput.value = base64Data;
+        
+        // update UI label if present
+        const labelSpan = currentInput.previousElementSibling;
+        if (labelSpan && labelSpan.tagName === 'SPAN') {
+            labelSpan.innerText = currentFileName + " (Cropped & Ready)";
+        } else if (currentInput.parentElement.querySelector('.file-name-display')) {
+            currentInput.parentElement.querySelector('.file-name-display').innerText = currentFileName + " (Cropped & Ready)";
+        }
+        
+        closeCropModal();
     });
 </script>
 
