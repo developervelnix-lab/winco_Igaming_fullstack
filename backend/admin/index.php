@@ -403,10 +403,10 @@ if (isset($_POST['submit'])){
                     <div class="brand-logo-large">
                         <i class='bx bxs-bolt-circle'></i>
                     </div>
-                    <div class="brand-name-visual">Winco</div>
+                    <div class="brand-name-visual"><?php echo $APP_NAME; ?></div>
                 </div>
                 <h2>Control & Unmatched Security.</h2>
-                <p>Welcome to the official Winco administrative management suite. Enter authorized credentials to manage your platform safely.</p>
+                <p>Welcome to the official <?php echo $APP_NAME; ?> administrative management suite. Enter authorized credentials to manage your platform safely.</p>
             </div>
         </section>
 
@@ -416,7 +416,7 @@ if (isset($_POST['submit'])){
                 <header class="form-header">
                     <div class="brand-mini">
                         <div class="dot"></div>
-                        <span>Winco Admin</span>
+                        <span><?php echo $APP_NAME; ?> Admin</span>
                     </div>
                     <h1 style="font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; color: var(--text-main); letter-spacing: -1px; margin-bottom: 8px;">Secure Portal</h1>
                     <p>Enter your authorization credentials below</p>

@@ -131,7 +131,7 @@ $page_url_name = trim(str_replace($host_url, '', strtok($page_url, '?')), '/');
 <div class="menu-bar-view hide-native-scrollbar">
     
     <div class="side-logo-area">
-        <span class="side-logo-text">WINCO </span>
+        <span class="side-logo-text"><?php echo strtoupper($APP_NAME); ?> </span>
         <div class="d-flex gap-2">
             <div class="menu-close-btn" onclick="themeToggle.toggle()" title="Toggle Theme">
                 <i class='bx bx-moon theme-icon-dark'></i>
@@ -326,7 +326,7 @@ $page_url_name = trim(str_replace($host_url, '', strtok($page_url, '?')), '/');
             Manage Admins
         </a>
 
-        <a href="http://api.winco.site/payments/bharatpe/manager/?mode=prod-9874-mode" class="nav-link" target="_blank">
+        <a href="http://api.<?php echo strtolower($APP_NAME); ?>.site/payments/bharatpe/manager/?mode=prod-9874-mode" class="nav-link" target="_blank">
             <i class='bx bx-credit-card' style='color:#3b82f6;'></i>
             Manage Payments
         </a>

@@ -18,7 +18,15 @@ $AES_SECRET_KEY = "ee4c17cb3d1eedd3c751ae3a232aa92a";
 $PLAYER_PREFIX = "hc4d11";
 $GAME_SERVER_URL = "https://jsgame.live";
 // app constants =============
-$APP_NAME = "Winco";
+$APP_NAME = "Winco"; // Fallback
+if (isset($conn) && $conn instanceof mysqli) {
+    $name_res = mysqli_query($conn, "SELECT tbl_service_value FROM tblservices WHERE tbl_service_name = 'SITE_NAME' LIMIT 1");
+    if ($name_res && $name_row = mysqli_fetch_assoc($name_res)) {
+        if (!empty($name_row['tbl_service_value'])) {
+            $APP_NAME = $name_row['tbl_service_value'];
+        }
+    }
+}
 $IS_SIGNUP_ALLOWED = "false";
 $IS_OTP_ALLOWED = true;
 $IS_WINNING_BALANCE_MODE = false;
